@@ -321,14 +321,15 @@ public partial class SimpleAnimation: MonoBehaviour
             int instanceNum = 0;
             bool exists = false;
             string name = state.name;
-            while (uniqueNames.TryGetValue(name, out exists))
+            string newName = state.name;
+            while (uniqueNames.TryGetValue(newName, out exists))
             {
                 instanceNum++;
-                name = string.Format("{0} {1}", name, instanceNum);
+                newName = string.Format("{0} {1}", name, instanceNum);
                 
             }
-            state.name = name;
-            uniqueNames.Add(name, true);
+            state.name = newName;
+            uniqueNames.Add(newName, true);
         }
 
         Reset();
