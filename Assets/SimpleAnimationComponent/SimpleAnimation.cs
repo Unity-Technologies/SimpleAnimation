@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.Playables;
 
@@ -57,6 +58,7 @@ public partial class SimpleAnimation: MonoBehaviour
         get { return m_Clip; }
         set
         {
+            LegacyClipCheck(value);
             m_Clip = value;
         }  
     }
@@ -69,6 +71,7 @@ public partial class SimpleAnimation: MonoBehaviour
 
     public void AddClip(AnimationClip clip, string newName)
     {
+        LegacyClipCheck(clip);
         AddState(clip, newName);
     }
 
@@ -131,6 +134,7 @@ public partial class SimpleAnimation: MonoBehaviour
 
     public void AddState(AnimationClip clip, string name)
     {
+        LegacyClipCheck(clip);
         Kick();
         if (m_Playable.AddClip(clip, name))
         {
