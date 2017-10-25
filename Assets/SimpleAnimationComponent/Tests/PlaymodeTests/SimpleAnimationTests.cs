@@ -60,4 +60,34 @@ public class SimpleAnimationTests
             Assert.Throws<InvalidOperationException>(() => { it.MoveNext(); });
         }
     }
+
+    public class LegacyClips
+    {
+        [Test]
+        public void SetClip_WithLegacyClip_Throws_ArgumentException()
+        {
+            SimpleAnimation animation = Instantiate();
+            var clip = new AnimationClip();
+            clip.legacy = true;
+            Assert.Throws<ArgumentException>(() => { animation.clip = clip; });
+        }
+
+        [Test]
+        public void AddClip_WithLegacyClip_Throws_ArgumentException()
+        {
+            SimpleAnimation animation = Instantiate();
+            var clip = new AnimationClip();
+            clip.legacy = true;
+            Assert.Throws<ArgumentException>(() => { animation.AddClip(clip, "DefaultName");});
+        }
+
+        [Test]
+        public void AddState_WithLegacyClip_Throws_ArgumentException()
+        {
+            SimpleAnimation animation = Instantiate();
+            var clip = new AnimationClip();
+            clip.legacy = true;
+            Assert.Throws<ArgumentException>(() => { animation.AddState(clip, "DefaultName"); });
+        }
+    }
 }
