@@ -58,7 +58,7 @@ public class BaseConditionsTests
 
         animation.cullingMode = AnimatorCullingMode.CullCompletely;
         animation.AddClip(clipInstance, "test");
-        animation.gameObject.GetComponent<MeshRenderer>().enabled = true;
+        animation.gameObject.GetComponent<MeshRenderer>().enabled = false;
         animation.Play("test");
 
         yield return null;
