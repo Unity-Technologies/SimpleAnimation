@@ -72,7 +72,7 @@ public partial class SimpleAnimation: MonoBehaviour
     public void AddClip(AnimationClip clip, string newName)
     {
         if (clip == null)
-            throw new System.NullReferenceException("clip");
+            throw new System.ArgumentNullException("clip");
 
         LegacyClipCheck(clip);
         AddState(clip, newName);
