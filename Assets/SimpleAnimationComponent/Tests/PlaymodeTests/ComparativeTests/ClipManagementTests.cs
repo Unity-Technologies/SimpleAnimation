@@ -46,10 +46,10 @@ public class ClipManagementTests
     public class AddClip
     {
         [Test]
-        public void AddClip_WithNullClip_Throws_NullReferenceException([ValueSource(typeof(ComparativeTestFixture), "Sources")]System.Type type)
+        public void AddClip_WithNullClip_Throws([ValueSource(typeof(ComparativeTestFixture), "Sources")]System.Type type)
         {
             IAnimation animation = ComparativeTestFixture.Instantiate(type);
-            Assert.Throws<System.NullReferenceException> (() => { animation.AddClip(null, "test"); });
+            Assert.Catch<System.SystemException>(() => { animation.AddClip(null, "test"); });
         }
 
         [Test]
