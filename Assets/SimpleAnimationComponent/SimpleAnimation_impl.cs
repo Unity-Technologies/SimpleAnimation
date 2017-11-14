@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using UnityEngine;
 using UnityEngine.Playables;
 
@@ -374,7 +376,9 @@ public partial class SimpleAnimation: MonoBehaviour
                 state.name = state.clip.name;
             }
 
+#if UNITY_EDITOR
             state.name = ObjectNames.GetUniqueName(names, state.name);
+#endif
             names[i] = state.name;
 
             if (state.clip && state.clip.legacy)
