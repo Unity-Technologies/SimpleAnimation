@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using UnityEngine;
 using UnityEngine.Playables;
 
 [RequireComponent(typeof(Animator))]
-public partial class SimpleAnimation: MonoBehaviour
+public partial class SimpleAnimation : MonoBehaviour
 {
     private class StateEnumerable : IEnumerable<State>
     {
@@ -90,20 +92,29 @@ public partial class SimpleAnimation: MonoBehaviour
         float State.time
         {
             get { return m_StateHandle.time; }
-            set { m_StateHandle.time = value;
-                m_Component.Kick(); }
+            set
+            {
+                m_StateHandle.time = value;
+                m_Component.Kick();
+            }
         }
         float State.normalizedTime
         {
             get { return m_StateHandle.normalizedTime; }
-            set { m_StateHandle.normalizedTime = value;
-                  m_Component.Kick();}
+            set
+            {
+                m_StateHandle.normalizedTime = value;
+                m_Component.Kick();
+            }
         }
         float State.speed
         {
             get { return m_StateHandle.speed; }
-            set { m_StateHandle.speed = value;
-                  m_Component.Kick();}
+            set
+            {
+                m_StateHandle.speed = value;
+                m_Component.Kick();
+            }
         }
 
         string State.name
@@ -114,8 +125,11 @@ public partial class SimpleAnimation: MonoBehaviour
         float State.weight
         {
             get { return m_StateHandle.weight; }
-            set { m_StateHandle.weight = value;
-                m_Component.Kick();}
+            set
+            {
+                m_StateHandle.weight = value;
+                m_Component.Kick();
+            }
         }
         float State.length
         {
@@ -202,7 +216,7 @@ public partial class SimpleAnimation: MonoBehaviour
     {
         if (m_Graph.IsValid())
             m_Graph.Destroy();
-        
+
         m_Initialized = false;
     }
 
@@ -251,7 +265,7 @@ public partial class SimpleAnimation: MonoBehaviour
 
     private void EnsureDefaultStateExists()
     {
-        if ( m_Playable != null && m_Clip != null && m_Playable.GetState(m_Clip.name) == null )
+        if (m_Playable != null && m_Clip != null && m_Playable.GetState(m_Clip.name) == null)
         {
             m_Playable.AddClip(m_Clip, m_Clip.name);
             Kick();
@@ -308,10 +322,10 @@ public partial class SimpleAnimation: MonoBehaviour
             throw new ArgumentException(string.Format("Legacy clip {0} cannot be used in this component. Set .legacy property to false before using this clip", clip));
         }
     }
-    
+
     void InvalidLegacyClipError(string clipName, string stateName)
     {
-        Debug.LogErrorFormat(this.gameObject,"Animation clip {0} in state {1} is Legacy. Set clip.legacy to false, or reimport as Generic to use it with SimpleAnimationComponent", clipName, stateName);
+        Debug.LogErrorFormat(this.gameObject, "Animation clip {0} in state {1} is Legacy. Set clip.legacy to false, or reimport as Generic to use it with SimpleAnimationComponent", clipName, stateName);
     }
 
     private void OnValidate()
@@ -322,14 +336,14 @@ public partial class SimpleAnimation: MonoBehaviour
 
         if (m_Clip && m_Clip.legacy)
         {
-            Debug.LogErrorFormat(this.gameObject,"Animation clip {0} is Legacy. Set clip.legacy to false, or reimport as Generic to use it with SimpleAnimationComponent", m_Clip.name);
+            Debug.LogErrorFormat(this.gameObject, "Animation clip {0} is Legacy. Set clip.legacy to false, or reimport as Generic to use it with SimpleAnimationComponent", m_Clip.name);
             m_Clip = null;
         }
 
         //Ensure at least one state exists
         if (m_States == null || m_States.Length == 0)
         {
-            m_States = new EditorState[1];   
+            m_States = new EditorState[1];
         }
 
         //Create default state if it's null
@@ -373,8 +387,9 @@ public partial class SimpleAnimation: MonoBehaviour
             {
                 state.name = state.clip.name;
             }
-
+#if UNITY_EDITOR
             state.name = ObjectNames.GetUniqueName(names, state.name);
+#endif
             names[i] = state.name;
 
             if (state.clip && state.clip.legacy)
