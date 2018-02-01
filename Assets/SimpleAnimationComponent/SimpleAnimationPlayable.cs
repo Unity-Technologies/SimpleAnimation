@@ -347,7 +347,7 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
         float travel = Mathf.Abs(state.weight - targetWeight);
         float newSpeed = time != 0f ? travel / time : Mathf.Infinity;
         
-        // If we're fading to the same target as before but faster, assume CrossFade was called multiple times and ignore new speed
+        // If we're fading to the same target as before but slower, assume CrossFade was called multiple times and ignore new speed
         if (state.fading && Mathf.Approximately(state.targetWeight, targetWeight) && newSpeed < state.fadeSpeed)
             return;
 
