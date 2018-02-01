@@ -266,6 +266,28 @@ public class PlaybackTests
 		}
 
         [UnityTest]
+        public IEnumerator Crossfade_EveryFrame_Resets_Crossfade_Duration([ValueSource(typeof(ComparativeTestFixture), "Sources")]System.Type type)
+        {
+            IAnimation animation = ComparativeTestFixture.Instantiate(type);
+            var clip = Resources.Load<AnimationClip>("LinearX");
+            var clip2 = Resources.Load<AnimationClip>("LinearY");
+            var clipInstance = Object.Instantiate<AnimationClip>(clip);
+            var clipInstance2 = Object.Instantiate<AnimationClip>(clip2);
+            clipInstance.legacy = animation.usesLegacy;
+            clipInstance2.legacy = animation.usesLegacy;
+
+            animation.AddClip(clipInstance, "ToPlay");
+            animation.AddClip(clipInstance2, "ToCrossfade");
+            animation.Play("ToPlay");
+            animation.CrossFade("ToCrossfade", 0.2f);
+            yield return new WaitForSeconds(0.1f);
+            animation.CrossFade("ToCrossfade", 0.2f);
+
+            Assert.IsTrue(animation.IsPlaying("ToPlay"));
+            Assert.Less(animation.GetState("ToCrossfade").weight, 1.0f);
+        }
+
+        [UnityTest]
         [Ignore("Wrong Assumption; clips don't get kept alive by crossfade")]
         public IEnumerator Crossfade_FromFinishingClip_KeepsClipAlive_UntilCrossfadeDone([ValueSource(typeof(ComparativeTestFixture), "Sources")]System.Type type)
         {
