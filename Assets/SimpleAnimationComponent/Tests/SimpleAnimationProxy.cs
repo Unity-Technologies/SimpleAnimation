@@ -128,7 +128,7 @@ public class SimpleAnimationProxy : MonoBehaviour, IAnimation
     {
         get { return false; }
     }
-    public GameObject gameObject
+    new public GameObject gameObject
     {
         get { return impl.gameObject; }
     }

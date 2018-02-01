@@ -345,7 +345,7 @@ public partial class SimpleAnimation: MonoBehaviour
         {
             var oldArray = m_States;
             m_States = new EditorState[oldArray.Length + 1];
-            var defaultState = CreateDefaultEditorState();
+            m_States[0] = CreateDefaultEditorState();
             oldArray.CopyTo(m_States, 1);
         }
 
