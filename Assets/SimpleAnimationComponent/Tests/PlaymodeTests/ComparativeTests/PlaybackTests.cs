@@ -266,7 +266,7 @@ public class PlaybackTests
 		}
 
         [UnityTest]
-        public IEnumerator Crossfade_EveryFrame_Resets_Crossfade_Duration([ValueSource(typeof(ComparativeTestFixture), "Sources")]System.Type type)
+        public IEnumerator Crossfade_MultipleTimes_DoesntReset_Crossfade_Duration([ValueSource(typeof(ComparativeTestFixture), "Sources")]System.Type type)
         {
             IAnimation animation = ComparativeTestFixture.Instantiate(type);
             var clip = Resources.Load<AnimationClip>("LinearX");
@@ -282,9 +282,9 @@ public class PlaybackTests
             animation.CrossFade("ToCrossfade", 0.2f);
             yield return new WaitForSeconds(0.1f);
             animation.CrossFade("ToCrossfade", 0.2f);
-
-            Assert.IsTrue(animation.IsPlaying("ToPlay"));
-            Assert.Less(animation.GetState("ToCrossfade").weight, 1.0f);
+            yield return new WaitForSeconds(0.11f);
+            Assert.AreEqual(0.0f, animation.GetState("ToPlay").weight);
+            Assert.AreEqual(1.0f, animation.GetState("ToCrossfade").weight);
         }
 
         [UnityTest]
