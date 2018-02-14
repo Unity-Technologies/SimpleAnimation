@@ -292,7 +292,6 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
         public bool isClone;
         public StateHandle parentState;
 
-        //
         public bool weightDirty;
         public bool enabledDirty;
         public bool timeIsUpToDate;

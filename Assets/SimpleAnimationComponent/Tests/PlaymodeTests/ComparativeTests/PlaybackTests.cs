@@ -266,6 +266,24 @@ public class PlaybackTests
 		}
 
         [UnityTest]
+        public IEnumerator CrossfadedOut_Clips_AreStopped([ValueSource(typeof(ComparativeTestFixture), "Sources")]System.Type type)
+        {
+            IAnimation animation = ComparativeTestFixture.Instantiate(type);
+            var clip = Resources.Load<AnimationClip>("LinearX");
+            var clipInstance = Object.Instantiate<AnimationClip>(clip);
+            clipInstance.legacy = animation.usesLegacy;
+
+            animation.AddClip(clipInstance, "ToPlay");
+            animation.AddClip(clipInstance, "ToCrossfade");
+            animation.Play("ToPlay");
+            animation.CrossFade("ToCrossfade", 0.1f);
+
+            yield return new WaitForSeconds(0.2f);
+
+            Assert.IsFalse(animation.IsPlaying("ToPlay"));
+        }
+
+        [UnityTest]
         public IEnumerator Crossfade_MultipleTimes_DoesntReset_Crossfade_Duration([ValueSource(typeof(ComparativeTestFixture), "Sources")]System.Type type)
         {
             IAnimation animation = ComparativeTestFixture.Instantiate(type);
@@ -343,8 +361,6 @@ public class PlaybackTests
             Assert.IsTrue(animation.IsPlaying("ToCrossfade"));
         }
 
-        //TODO: What happens when you crossfade an animation that's already playing
-        //TODO: What happens when you play an animation that's already playing
     }
 
     public class CrossfadeQueue
