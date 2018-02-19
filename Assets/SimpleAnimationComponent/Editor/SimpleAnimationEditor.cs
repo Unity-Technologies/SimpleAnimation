@@ -22,7 +22,6 @@ public class SimpleAnimationEditor : Editor
     SerializedProperty animatePhysics;
     SerializedProperty cullingMode;
 
-    bool m_AnimationsExpanded = true;
     void OnEnable()
     {
         clip = serializedObject.FindProperty("m_Clip");

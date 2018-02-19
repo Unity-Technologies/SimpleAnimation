@@ -512,8 +512,9 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
             }
             else
             {
-                StateInfo state = m_States[index];
+                StateInfo state = m_States[index]; 
                 state.fadeSpeed = 0f;
+                state.speed = 0f;
                 state.weight = 0f;
                 state.targetWeight = 0f;
                 state.time = 0f;

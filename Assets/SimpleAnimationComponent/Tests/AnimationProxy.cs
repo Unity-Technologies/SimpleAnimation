@@ -71,7 +71,7 @@ public class AnimationProxy : MonoBehaviour, IAnimation
 
     private Animation m_Animation;
 
-    private Animation animation
+    new private Animation animation
     {
         get
         {
@@ -153,7 +153,7 @@ public class AnimationProxy : MonoBehaviour, IAnimation
     {
         get { return true; }
     }
-    public GameObject gameObject
+    new public GameObject gameObject
     {
         get { return animation.gameObject; }
     }
