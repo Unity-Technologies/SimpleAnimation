@@ -233,6 +233,7 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
                     throw new System.ArgumentException("Weights cannot be negative");
 
                 m_Parent.m_States[m_Index].weight = value;
+                m_Parent.m_States[m_Index].weightDirty = true;
             }
         }
 
