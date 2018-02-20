@@ -482,6 +482,52 @@ public class StateAccessTests
         }
 
         [UnityTest]
+        public IEnumerator State_Weight_FlipFlopTest([ValueSource(typeof(ComparativeTestFixture), "Sources")]System.Type type)
+        {
+            IAnimation animation = ComparativeTestFixture.Instantiate(type);
+            var clip = Resources.Load<AnimationClip>("LinearX");
+            var clipInstance = Object.Instantiate<AnimationClip>(clip);
+            clipInstance.legacy = animation.usesLegacy;
+
+            animation.AddClip(clipInstance, "ValidName");
+            IAnimationState state = animation.GetState("ValidName");
+            state.enabled = true;
+            state.weight = 0f;
+            state.time = 0.5f; //Seek the clip so that values should be written;
+            yield return null;
+            Assert.AreEqual(0f, animation.gameObject.transform.localPosition.x);
+            state.weight = 1f;
+            yield return null;
+            Assert.AreNotEqual(0f, animation.gameObject.transform.localPosition.x);
+        }
+
+        [UnityTest]
+        public IEnumerator State_Weight_Normalizes([ValueSource(typeof(ComparativeTestFixture), "Sources")]System.Type type)
+        {
+            IAnimation animation = ComparativeTestFixture.Instantiate(type);
+            var clip = Resources.Load<AnimationClip>("LinearX");
+            var clip2 = Resources.Load<AnimationClip>("LinearY");
+            var clipInstance = Object.Instantiate<AnimationClip>(clip);
+            var clipInstance2 = Object.Instantiate<AnimationClip>(clip2);
+            clipInstance.legacy = animation.usesLegacy;
+            clipInstance2.legacy = animation.usesLegacy;
+
+            animation.AddClip(clipInstance, "State1");
+            animation.AddClip(clipInstance2, "State2");
+            IAnimationState state1 = animation.GetState("State1");
+            IAnimationState state2 = animation.GetState("State2");
+            state1.enabled = true;
+            state2.enabled = true;
+            state1.weight = 1f;
+            state2.weight = 1f;
+            state1.time = 0.5f; //Seek the clip so that values should be written;
+            state2.time = 0.5f; //Seek the clip so that values should be written;
+            yield return null;
+            Assert.AreEqual(0.25f, animation.gameObject.transform.localPosition.x);
+            Assert.AreEqual(0.25f, animation.gameObject.transform.localPosition.y);
+        }
+
+        [UnityTest]
         public IEnumerator State_Weight_NonZero_Writes([ValueSource(typeof(ComparativeTestFixture), "Sources")]System.Type type)
         {
             IAnimation animation = ComparativeTestFixture.Instantiate(type);

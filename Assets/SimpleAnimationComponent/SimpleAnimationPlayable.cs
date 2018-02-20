@@ -515,6 +515,8 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
 
     private void UpdateStates(float deltaTime)
     {
+        bool mustUpdateWeights = false;
+        float totalWeight = 0f;
         for (int i = 0; i < m_States.Count; i++)
         {
             StateInfo state = m_States[i];
@@ -579,12 +581,22 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
                     state.weightDirty = true;
                 }
             }
-            
 
+            totalWeight += state.weight;
             if (state.weightDirty)
             {
-                m_Mixer.SetInputWeight(state.index, state.weight);
-                state.weightDirty = false;
+                mustUpdateWeights = true;
+            }
+        }
+
+        if (mustUpdateWeights)
+        {
+            bool hasAnyWeight = totalWeight > 0.0f;
+            for (int i = 0; i < m_States.Count; i++)
+            {
+                StateInfo state = m_States[i];
+                float weight = hasAnyWeight ? state.weight / totalWeight : 0.0f;
+                m_Mixer.SetInputWeight(state.index, weight);
             }
         }
     }
