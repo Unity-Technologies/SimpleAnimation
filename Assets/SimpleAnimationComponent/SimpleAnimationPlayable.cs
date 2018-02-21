@@ -535,6 +535,11 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
                 {
                     state.fadeSpeed = 0f;
                     state.fading = false;
+                    if (state.weight == 0f)
+                    {
+                        state.enabled = false;
+                        state.weightDirty = true;
+                    }
                 }
                 state.weightDirty = true;
             }
