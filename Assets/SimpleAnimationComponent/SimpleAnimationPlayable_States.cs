@@ -164,7 +164,7 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
                 if (!IsValid())
                     throw new System.InvalidOperationException("This StateHandle is not valid");
 
-                float length = m_Parent.m_States.GetStateLength(m_Index);
+                float length = m_Parent.m_States.GetClipLength(m_Index);
                 if (length == 0f)
                     length = 1f;
 
@@ -175,7 +175,7 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
                 if (!IsValid())
                     throw new System.InvalidOperationException("This StateHandle is not valid");
 
-                float length = m_Parent.m_States.GetStateLength(m_Index);
+                float length = m_Parent.m_States.GetClipLength(m_Index);
                 if (length == 0f)
                     length = 1f;
 
@@ -470,6 +470,15 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
                 return Mathf.Infinity;
 
             return clip.length / speed;
+        }
+
+        public float GetClipLength(int index)
+        {
+            AnimationClip clip = m_States[index].clip;
+            if (clip == null)
+                return 0f;
+
+            return clip.length;
         }
 
         public float GetStatePlayableDuration(int index)
