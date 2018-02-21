@@ -371,6 +371,23 @@ public class StateAccessTests
             Assert.IsTrue(state.enabled);
 
         }
+
+        [Test]
+        public void State_Speed_DoesntAffect_NormalizedTime([ValueSource(typeof(ComparativeTestFixture), "Sources")]System.Type type)
+        {
+            IAnimation animation = ComparativeTestFixture.Instantiate(type);
+            var clip = Resources.Load<AnimationClip>("LinearX");
+            var clipInstance = Object.Instantiate<AnimationClip>(clip);
+            clipInstance.legacy = animation.usesLegacy;
+            clipInstance.wrapMode = WrapMode.Loop;
+
+            animation.AddClip(clipInstance, "ValidName");
+            IAnimationState state = animation.GetState("ValidName");
+            state.time = 0.5f;
+            float normalizedTime = state.normalizedTime;
+            state.speed = 10.0f;
+            Assert.AreEqual(normalizedTime, state.normalizedTime);
+        }
     }
 
     public class Name
