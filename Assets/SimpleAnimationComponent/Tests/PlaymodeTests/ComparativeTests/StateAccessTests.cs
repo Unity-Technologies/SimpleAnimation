@@ -167,6 +167,26 @@ public class StateAccessTests
             Assert.IsTrue(animation.IsPlaying(state.name), "State should be disabled");
             Assert.IsTrue(animation.isPlaying, "State should be disabled");
         }
+
+        [UnityTest]
+        public IEnumerator State_Time_SetTime_DoesntPlayEvents([ValueSource(typeof(ComparativeTestFixture), "Sources")]System.Type type)
+        {
+            IAnimation animation = ComparativeTestFixture.Instantiate(type);
+            var clip = Resources.Load<AnimationClip>("FiresEvent");
+            var clipInstance = Object.Instantiate<AnimationClip>(clip);
+            clipInstance.legacy = animation.usesLegacy;
+
+            animation.AddClip(clipInstance, "ValidName");
+            var eventReceiver = animation.gameObject.AddComponent<SimpleAnimationTests.ReceivesEvent>();
+            IAnimationState state = animation.GetState("ValidName");
+            animation.Play(state.name);
+            state.time = 0.1f;
+            yield return null;
+            Assert.AreEqual(0, eventReceiver.eventCount, "Event should not have been received");
+            state.time = 0.6f;
+            yield return null;
+            Assert.AreEqual(0, eventReceiver.eventCount, "Event should have been received after setting the time on the state");
+        }
     }
 
     public class NormalizedTime
