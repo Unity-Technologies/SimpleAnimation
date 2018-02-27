@@ -426,7 +426,7 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
             StateInfo state = m_States[index];
             state.time = time;
 
-            state.playable.SetTime(time);
+            state.playable.ResetTime(time);
             state.playable.SetDone(time >= state.playable.GetDuration());
         }
 
@@ -530,7 +530,7 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
                 state.enabled = false;
                 state.enabledDirty = true;
                 state.weightDirty = true;
-                state.playable.SetTime(0f);
+                state.playable.ResetTime(0f);
                 state.playable.SetDone(false);
             }
         }

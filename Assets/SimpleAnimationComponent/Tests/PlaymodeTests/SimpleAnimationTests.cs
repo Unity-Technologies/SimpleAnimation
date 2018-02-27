@@ -90,4 +90,16 @@ public class SimpleAnimationTests
             Assert.Throws<ArgumentException>(() => { animation.AddState(clip, "DefaultName"); });
         }
     }
+
+
+    //Event Receiver for FiresEvent AnimationClip
+    public class ReceivesEvent : MonoBehaviour
+    {
+        public int eventCount;
+
+        void Event()
+        {
+            eventCount++;
+        }
+    }
 }

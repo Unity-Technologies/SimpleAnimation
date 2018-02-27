@@ -477,8 +477,7 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
                 Playable input = m_Mixer.GetInput(state.index);
                 if (!input.Equals(Playable.Null))
                 {
-                    input.SetTime(0f);
-                    input.SetTime(0f);
+                    input.ResetTime(0f);
                 }
             }
         }
@@ -578,8 +577,7 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
                 {
                     state.weight = 0f;
                     state.time = 0f;
-                    state.playable.SetTime(state.time);
-                    state.playable.SetTime(state.time);
+                    state.playable.ResetTime(state.time);
                     m_States.DisableState(i);
                     if (!keepStoppedPlayablesConnected)
                         DisconnectInput(state.index);
