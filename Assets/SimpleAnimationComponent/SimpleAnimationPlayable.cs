@@ -49,9 +49,9 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
     public Playable playable { get { return self; } }
     protected PlayableGraph graph { get { return self.GetGraph(); } }
     
-    public Action<int> OnAnimationStarted;
-    public Action<int> OnAnimationStopped;
-    public Action<int> OnAnimationCompleted;
+    public event Action<int> OnAnimationStarted;
+    public event Action<int> OnAnimationStopped;
+    public event Action<int> OnAnimationCompleted;
 
     AnimationMixerPlayable m_Mixer;
 
