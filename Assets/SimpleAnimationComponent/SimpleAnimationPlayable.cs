@@ -48,6 +48,10 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
     protected Playable self { get { return m_ActualPlayable; } }
     public Playable playable { get { return self; } }
     protected PlayableGraph graph { get { return self.GetGraph(); } }
+    
+    public event Action<int> OnAnimationStarted;
+    public event Action<int> OnAnimationStopped;
+    public event Action<int> OnAnimationCompleted;
 
     AnimationMixerPlayable m_Mixer;
 
@@ -114,7 +118,7 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
         if (!clip.isLooping || newState.wrapMode == WrapMode.Once)
         {
             newState.playable.SetDuration(clip.length);
-            newState.playable.SetPlayState(PlayState.Paused);
+            newState.playable.Play();
         }
 
         if (keepStoppedPlayablesConnected)
@@ -181,6 +185,13 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
             { 
                 m_States.EnableState(i);
                 m_States.SetInputWeight(i, 1f);
+
+                state.stopped = false;                
+
+                if (OnAnimationStarted != null)
+                {
+                    OnAnimationStarted(index);
+                }
             }
             else
             {
@@ -286,6 +297,16 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
         if (!state.isClone)
         {
             RemoveClones(state);
+        }
+
+        if (!state.stopped) //prevent from running twice if game stopped
+        {
+            state.stopped = true;
+
+            if (OnAnimationStopped != null)
+            {
+                OnAnimationStopped(index);
+            }
         }
     }
 
@@ -501,7 +522,7 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
     {
         if (keepStoppedPlayablesConnected)
         {
-            m_States[index].playable.SetPlayState(PlayState.Paused);
+            m_States[index].playable.Pause();
         }
         graph.Disconnect(m_Mixer, index);
     }
@@ -545,7 +566,10 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
 
             if (state.enabledDirty)
             {
-                state.playable.SetPlayState(state.enabled ? PlayState.Playing : PlayState.Paused);
+                if (state.enabled)
+                    state.playable.Play();
+                else 
+                    state.playable.Pause();
 
                 if (!keepStoppedPlayablesConnected)
                 {
@@ -564,7 +588,7 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
                 state.enabledDirty = false;
             }
             
-            if (state.enabled && state.wrapMode == WrapMode.Once)
+            if (state.enabled && IsClipNonLooping(state.clip))
             {
                 bool stateIsDone = state.playable.IsDone();
                 float speed = m_States.GetStateSpeed(state.index);
@@ -582,6 +606,11 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
                     if (!keepStoppedPlayablesConnected)
                         DisconnectInput(state.index);
                     state.weightDirty = true;
+
+                    if (OnAnimationCompleted != null)
+                    {
+                        OnAnimationCompleted(state.index);
+                    }
                 }
             }
 
@@ -603,6 +632,21 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
             }
         }
     }
+
+    private bool IsClipNonLooping(AnimationClip clip)
+    {
+        if (clip.legacy) //legacy clip
+        {
+            return (clip.wrapMode == WrapMode.Once ||
+                    clip.wrapMode == WrapMode.Clamp ||
+                    clip.wrapMode == WrapMode.ClampForever);
+        }
+        else //non-legacy clip
+        {
+            return !clip.isLooping;
+        }
+    }
+
 
     private float CalculateQueueTimes()
     {
