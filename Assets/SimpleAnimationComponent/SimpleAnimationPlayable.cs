@@ -118,7 +118,7 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
         if (!clip.isLooping || newState.wrapMode == WrapMode.Once)
         {
             newState.playable.SetDuration(clip.length);
-            newState.playable.SetPlayState(PlayState.Paused);
+            newState.playable.Play();
         }
 
         if (keepStoppedPlayablesConnected)
@@ -522,7 +522,7 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
     {
         if (keepStoppedPlayablesConnected)
         {
-            m_States[index].playable.SetPlayState(PlayState.Paused);
+            m_States[index].playable.Pause();
         }
         graph.Disconnect(m_Mixer, index);
     }
@@ -566,7 +566,10 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
 
             if (state.enabledDirty)
             {
-                state.playable.SetPlayState(state.enabled ? PlayState.Playing : PlayState.Paused);
+                if (state.enabled)
+                    state.playable.Play();
+                else 
+                    state.playable.Pause();
 
                 if (!keepStoppedPlayablesConnected)
                 {
