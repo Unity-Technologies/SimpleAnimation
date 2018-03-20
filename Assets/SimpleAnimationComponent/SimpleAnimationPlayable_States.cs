@@ -279,6 +279,7 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
         public bool enabled;
         public int index;
         public string stateName;
+        public bool stopped;
         public bool fading;
         public float time;
         public float targetWeight;
