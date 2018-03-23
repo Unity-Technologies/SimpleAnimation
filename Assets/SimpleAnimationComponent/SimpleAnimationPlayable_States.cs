@@ -365,7 +365,7 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
             {
                 removed.playable.GetGraph().DestroyPlayable(removed.playable);
             }
-            m_Count = m_States.Count;
+            m_Count--;
         }
 
         public bool RemoveClip(AnimationClip clip)

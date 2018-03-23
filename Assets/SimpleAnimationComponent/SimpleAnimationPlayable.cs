@@ -331,15 +331,7 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
 
     public int GetClipCount()
     {
-        int count=0;
-        for (int i = 0; i < m_States.Count; i++)
-        {
-            if (m_States[i] != null)
-            {
-                count++;
-            }
-        }
-        return count;
+        return m_States.Count;
     }
 
     private void SetupLerp(StateInfo state, float targetWeight, float time)
