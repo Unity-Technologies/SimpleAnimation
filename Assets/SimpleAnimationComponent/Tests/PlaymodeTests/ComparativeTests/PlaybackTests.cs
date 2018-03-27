@@ -284,6 +284,24 @@ public class PlaybackTests
         }
 
         [UnityTest]
+        public IEnumerator CrossfadedOut_Clips_AreTimeReset([ValueSource(typeof(ComparativeTestFixture), "Sources")]System.Type type)
+        {
+            IAnimation animation = ComparativeTestFixture.Instantiate(type);
+            var clip = Resources.Load<AnimationClip>("LinearX");
+            var clipInstance = Object.Instantiate<AnimationClip>(clip);
+            clipInstance.legacy = animation.usesLegacy;
+
+            animation.AddClip(clipInstance, "ToPlay");
+            animation.AddClip(clipInstance, "ToCrossfade");
+            animation.Play("ToPlay");
+            animation.CrossFade("ToCrossfade", 0.1f);
+
+            yield return new WaitForSeconds(0.2f);
+
+            Assert.AreEqual(0.0f, animation.GetState("ToPlay").normalizedTime);
+        }
+
+        [UnityTest]
         public IEnumerator Crossfade_MultipleTimes_DoesntReset_Crossfade_Duration([ValueSource(typeof(ComparativeTestFixture), "Sources")]System.Type type)
         {
             IAnimation animation = ComparativeTestFixture.Instantiate(type);

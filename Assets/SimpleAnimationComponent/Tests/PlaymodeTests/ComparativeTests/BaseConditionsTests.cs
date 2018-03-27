@@ -42,7 +42,6 @@ public class BaseConditionsTests
         animation.gameObject.GetComponent<MeshRenderer>().enabled = false;
         animation.Play("test");
         
-
         yield return null;
         yield return null;
         Assert.AreNotEqual(Vector3.zero, animation.gameObject.transform.localPosition);

@@ -77,7 +77,7 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
         self.SetInputWeight(0, 1);
         graph.Connect(m_Mixer, 0, self, 0);
     }
-    
+
     public IEnumerable<IState> GetStates()
     {
         return new StateEnumerable(this);
@@ -98,9 +98,7 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
     {
         //Start new State
         StateInfo newState = m_States.InsertState();
-        newState.stateName = name;
-        newState.clip = clip;
-        newState.wrapMode = clip.wrapMode;
+        newState.Initialize(name, clip, clip.wrapMode);
         //Find at which input the state will be connected
         int index = newState.index;
 
@@ -110,12 +108,13 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
             m_Mixer.SetInputCount(index + 1);
         }
 
-        newState.playable = AnimationClipPlayable.Create(graph, clip);
+        var clipPlayable = AnimationClipPlayable.Create(graph, clip);
         if (!clip.isLooping || newState.wrapMode == WrapMode.Once)
         {
-            newState.playable.SetDuration(clip.length);
-            newState.playable.SetPlayState(PlayState.Paused);
+            clipPlayable.SetDuration(clip.length);
         }
+        newState.SetPlayable(clipPlayable);
+        newState.Pause();
 
         if (keepStoppedPlayablesConnected)
             ConnectInput(newState.index);
@@ -150,7 +149,7 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
 
         RemoveClones(state);
         InvalidateStates();
-        m_States.RemoveAtIndex(state.index);
+        m_States.RemoveState(state.index);
         return true;
     }
 
@@ -178,9 +177,9 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
         {
             StateInfo state = m_States[i];
             if (state.index == index)
-            { 
-                m_States.EnableState(i);
-                m_States.SetInputWeight(i, 1f);
+            {
+                state.Enable();
+                state.ForceWeight(1.0f);
             }
             else
             {
@@ -203,7 +202,7 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
         return PlayQueued(state.index, queueMode);
     }
 
-    private bool PlayQueued(int index, QueueMode queueMode)
+    bool PlayQueued(int index, QueueMode queueMode)
     {
         StateInfo newState = CloneState(index);
 
@@ -281,7 +280,7 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
     {
         StateInfo state = m_States[index];
         if (state == null)
-            return; 
+            return;
         m_States.StopState(index, state.isClone);
         if (!state.isClone)
         {
@@ -346,14 +345,12 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
     {
         float travel = Mathf.Abs(state.weight - targetWeight);
         float newSpeed = time != 0f ? travel / time : Mathf.Infinity;
-        
+
         // If we're fading to the same target as before but slower, assume CrossFade was called multiple times and ignore new speed
         if (state.fading && Mathf.Approximately(state.targetWeight, targetWeight) && newSpeed < state.fadeSpeed)
             return;
 
-        state.fading = travel > 0f;
-        state.fadeSpeed = newSpeed;
-        state.targetWeight = targetWeight;
+        state.FadeTo(targetWeight, newSpeed);
     }
 
     private bool Crossfade(int index, float time)
@@ -384,8 +381,7 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
         StateInfo original = m_States[index];
         string newName = original.stateName + "Queued Clone";
         StateInfo clone = DoAddClip(newName, original.clip);
-        clone.parentState = new StateHandle(this, original.index, original.playable);
-        clone.isClone = true;
+        clone.SetAsCloneOf(new StateHandle(this, original.index, original.playable));
         return clone;
     }
 
@@ -438,11 +434,11 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
 
         if (time == 0f)
         {
-            state.weight = targetWeight;
+            state.ForceWeight(targetWeight);
         }
         else
         {
-            SetupLerp(state, targetWeight, time);   
+            SetupLerp(state, targetWeight, time);
         }
 
         return true;
@@ -494,14 +490,14 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
                 onDone();
             }
         }
-            
+
     }
 
     private void DisconnectInput(int index)
     {
         if (keepStoppedPlayablesConnected)
         {
-            m_States[index].playable.SetPlayState(PlayState.Paused);
+            m_States[index].Pause();
         }
         graph.Disconnect(m_Mixer, index);
     }
@@ -529,23 +525,23 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
             //Update crossfade weight
             if (state.fading)
             {
-                state.weight = Mathf.MoveTowards(state.weight, state.targetWeight, state.fadeSpeed *deltaTime);
-                if (state.weight == state.targetWeight)
+                state.SetWeight(Mathf.MoveTowards(state.weight, state.targetWeight, state.fadeSpeed *deltaTime));
+                if (Mathf.Approximately(state.weight, state.targetWeight))
                 {
-                    state.fadeSpeed = 0f;
-                    state.fading = false;
+                    state.ForceWeight(state.targetWeight);
                     if (state.weight == 0f)
                     {
-                        state.enabled = false;
-                        state.weightDirty = true;
+                        state.Stop();
                     }
                 }
-                state.weightDirty = true;
             }
 
             if (state.enabledDirty)
             {
-                state.playable.SetPlayState(state.enabled ? PlayState.Playing : PlayState.Paused);
+                if (state.enabled)
+                    state.Play();
+                else
+                    state.Pause();
 
                 if (!keepStoppedPlayablesConnected)
                 {
@@ -560,28 +556,24 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
                         ConnectInput(state.index);
                     }
                 }
-                state.weightDirty = true;
-                state.enabledDirty = false;
             }
-            
+
             if (state.enabled && state.wrapMode == WrapMode.Once)
             {
-                bool stateIsDone = state.playable.IsDone();
-                float speed = m_States.GetStateSpeed(state.index);
-                float time = m_States.GetStateTime(state.index);
-                float duration = m_States.GetStatePlayableDuration(state.index);
+                bool stateIsDone = state.isDone;
+                float speed = state.speed;
+                float time = state.GetTime();
+                float duration = state.playableDuration;
 
                 stateIsDone |= speed < 0f && time < 0f;
                 stateIsDone |= speed >= 0f && time >= duration;
                 if (stateIsDone)
                 {
-                    state.weight = 0f;
-                    state.time = 0f;
-                    state.playable.ResetTime(state.time);
-                    m_States.DisableState(i);
+                    state.Stop();
+                    state.Disable();
                     if (!keepStoppedPlayablesConnected)
                         DisconnectInput(state.index);
-                    state.weightDirty = true;
+
                 }
             }
 
@@ -590,6 +582,7 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
             {
                 mustUpdateWeights = true;
             }
+            state.ResetDirtyFlags();
         }
 
         if (mustUpdateWeights)
@@ -620,7 +613,7 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
                 return Mathf.Infinity;
             }
 
-            float speed = (float)state.playable.GetSpeed();
+            float speed = state.speed;
             float stateTime = m_States.GetStateTime(state.index);
             float remainingTime;
             if (speed > 0 )
@@ -647,15 +640,17 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
 
     private void ClearQueuedStates()
     {
-        IEnumerator<QueuedState> it = m_StateQueue.GetEnumerator();
-
-        while (it.MoveNext())
+        using (var it = m_StateQueue.GetEnumerator())
         {
-            QueuedState queuedState = it.Current;
-            m_States.StopState(queuedState.state.index, true);
+            while (it.MoveNext())
+            {
+                QueuedState queuedState = it.Current;
+                m_States.StopState(queuedState.state.index, true);
+            }
         }
         m_StateQueue.Clear();
     }
+
     private void UpdateQueuedStates()
     {
         bool mustCalculateQueueTimes = true;
@@ -681,7 +676,7 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
         }
     }
 
-    private void UpdateStateTimes()
+    void InvalidateStateTimes()
     {
         int count = m_States.Count;
         for (int i = 0; i < count; i++)
@@ -690,13 +685,13 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
             if (state == null)
                 continue;
 
-            state.timeIsUpToDate = false;
+            state.InvalidateTime();
         }
     }
 
     public override void PrepareFrame(Playable owner, FrameData data)
     {
-        UpdateStateTimes();
+        InvalidateStateTimes();
 
         UpdateQueuedStates();
 
@@ -721,18 +716,5 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
     public bool ValidateIndex(int index)
     {
         return index >= 0 && index < m_States.Count;
-    }
-
-    private void SetInputWeight(int index, float weight)
-    {
-        StateInfo state = m_States[index];
-        state.targetWeight = weight;
-        state.weight = weight;
-        state.fading = false;
-    }
-
-    private float GetInputWeight(int index)
-    {
-        return m_States[index].weight;
     }
 }
