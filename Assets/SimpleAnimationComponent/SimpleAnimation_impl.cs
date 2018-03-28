@@ -247,7 +247,6 @@ public partial class SimpleAnimation: MonoBehaviour
 
         AnimationPlayableUtilities.Play(m_Animator, m_Playable.playable, m_Graph);
         Play();
-        Kick();
         m_Initialized = true;
     }
 
