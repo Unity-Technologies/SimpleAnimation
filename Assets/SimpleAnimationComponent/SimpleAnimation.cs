@@ -124,11 +124,11 @@ public partial class SimpleAnimation: MonoBehaviour
     public bool Play()
     {
         m_Animator.enabled = true;
-        Kick();
         if (m_Clip != null)
         {
             m_Playable.Play(m_Clip.name);
         }
+        Kick();
         return false;
     }
 
