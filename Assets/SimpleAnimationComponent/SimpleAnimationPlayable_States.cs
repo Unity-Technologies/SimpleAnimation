@@ -82,7 +82,7 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
             }
         }
     }
-    
+
     public interface IState
     {
         bool IsValid();
@@ -319,12 +319,12 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
 
         public void Pause()
         {
-            m_Playable.SetPlayState(PlayState.Paused);
+            m_Playable.Pause();
         }
 
         public void Play()
         {
-            m_Playable.SetPlayState(PlayState.Playing);
+            m_Playable.Play();
         }
 
         public void Stop()
@@ -487,7 +487,7 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
         public bool weightDirty { get { return m_WeightDirty; } }
 
         public void ResetDirtyFlags()
-        { 
+        {
             m_EnabledDirty = false;
             m_WeightDirty = false;
         }
@@ -597,7 +597,7 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
         {
             StateInfo state = m_States[index];
             state.SetWeight(weight);
-           
+
         }
 
         public void SetStateTime(int index, float time)

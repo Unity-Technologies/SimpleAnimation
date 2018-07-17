@@ -1,0 +1,9 @@
+.npmignore
+Modules/
+Modules.meta
+Plugins/
+Plugins.meta
+Tests/
+Tests.meta
+SimpleAnimationComponent/Tests/
+SimpleAnimationComponent/Tests.meta

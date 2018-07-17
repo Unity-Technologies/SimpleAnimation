@@ -1,8 +1,63 @@
-Temp
-Library/**
-ProjectSettings
-Packages
-SimpleAnimation.sln
-SimpleAnimation.csproj
-SimpleAnimation.Editor.csproj
-.vs
+# =============== #
+# Unity generated #
+# =============== #
+/[Tt]emp/
+/[Oo]bj/
+/[Ll]ibrary/
+/[Bb]uild/
+/UnityGenerated/
+# Library should not freeze version, it should be written in README.
+/ProjectSettings/ProjectVersion.txt
+
+# ============= #
+# IDE generated #
+# ============= #
+# MonoDevelop / VisualStudio
+/ExportedObj/
+/*.svd
+/*.userprefs
+/*.csproj
+/*.pidb
+/*.suo
+/*.sln
+/*.user
+/*.unityproj
+/*.booproj
+# Sublime Text
+/*.sublime-*
+# Visual Studio Code
+/.vscode/
+# IntelliJ Rider
+/.idea/
+/Assets/Plugins/Editor/JetBrains/
+/Assets/Plugins/Editor/JetBrains.meta
+
+# ======================= #
+# umm (Node.js) generated #
+# ======================= #
+/node_modules/
+/Assets/Modules*
+/package-lock.json
+/yarn.lock
+
+# ============ #
+# OS generated #
+# ============ #
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ======== #
+# Optional #
+# ======== #
+/Assets/Plugins.meta
+/Assets/Plugins/Editor.meta
+
+# ====== #
+# Custom #
+# ====== #
+

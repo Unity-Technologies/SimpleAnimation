@@ -1,0 +1,12 @@
+{
+    "name": "umm@simple_animation-Editor",
+    "references": [
+        "umm@simple_animation"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}

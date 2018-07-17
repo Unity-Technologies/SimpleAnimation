@@ -1,0 +1,30 @@
+{
+  "name": "@umm/simple_animation",
+  "version": "1.0.2",
+  "description": "A simple Animation Component that leverages PlayableGraphs",
+  "homepage": "https://github.com/umm/simple_animation",
+  "bugs": {
+    "url": "https://github.com/umm/simple_animation/issues"
+  },
+  "scripts": {
+    "umm:init": "umm-init",
+    "umm:generate_assembly_definition": "umm-generate_assembly_definition",
+    "umm:module:install": "umm-module-install",
+    "umm:module:uninstall": "umm-module-uninstall",
+    "postinstall": "npm run --silent umm:module:install",
+    "postuninstall": "npm run --silent umm:module:uninstall"
+  },
+  "author": "Unity Technologies",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:umm/simple_animation"
+  },
+  "files": [
+    "Assets"
+  ],
+  "dependencies": {
+    "@umm/scripts": "umm/scripts#^1.0.0"
+  },
+  "devDependencies": {}
+}

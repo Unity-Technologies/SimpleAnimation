@@ -184,9 +184,9 @@ public partial class SimpleAnimation: MonoBehaviour
     {
         Initialize();
         m_Graph.Play();
+        Stop();
         if (m_PlayAutomatically)
         {
-            Stop();
             Play();
         }
     }
@@ -204,7 +204,7 @@ public partial class SimpleAnimation: MonoBehaviour
     {
         if (m_Graph.IsValid())
             m_Graph.Destroy();
-        
+
         m_Initialized = false;
     }
 
@@ -310,7 +310,7 @@ public partial class SimpleAnimation: MonoBehaviour
             throw new ArgumentException(string.Format("Legacy clip {0} cannot be used in this component. Set .legacy property to false before using this clip", clip));
         }
     }
-    
+
     void InvalidLegacyClipError(string clipName, string stateName)
     {
         Debug.LogErrorFormat(this.gameObject,"Animation clip {0} in state {1} is Legacy. Set clip.legacy to false, or reimport as Generic to use it with SimpleAnimationComponent", clipName, stateName);
@@ -331,7 +331,7 @@ public partial class SimpleAnimation: MonoBehaviour
         //Ensure at least one state exists
         if (m_States == null || m_States.Length == 0)
         {
-            m_States = new EditorState[1];   
+            m_States = new EditorState[1];
         }
 
         //Create default state if it's null
