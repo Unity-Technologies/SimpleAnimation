@@ -1,6 +1,4 @@
-﻿
-using NUnit.Framework;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 
 [CustomEditor(typeof(SimpleAnimation))]
