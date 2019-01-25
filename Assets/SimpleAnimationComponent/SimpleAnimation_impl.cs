@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.Playables;
 
 [RequireComponent(typeof(Animator))]
-public partial class SimpleAnimation: MonoBehaviour
+public partial class SimpleAnimation: MonoBehaviour, IAnimationClipSource
 {
     private class StateEnumerable : IEnumerable<State>
     {
@@ -393,4 +393,12 @@ public partial class SimpleAnimation: MonoBehaviour
         m_Animator.cullingMode = m_CullingMode;
     }
 
+    public void GetAnimationClips(List<AnimationClip> results)
+    {
+        foreach (var state in m_States)
+        {
+            if (state.clip != null)
+                results.Add(state.clip);
+        }
+    }
 }
