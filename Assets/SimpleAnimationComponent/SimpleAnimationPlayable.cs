@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
@@ -321,6 +321,9 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
         for (int i = 0; i < m_States.Count; i++)
         {
             StateInfo otherState = m_States[i];
+            if (otherState == null)
+                continue;
+
             if (otherState.isClone && otherState.enabled && otherState.parentState.index == state.index)
             {
                 return true;
@@ -495,6 +498,24 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
 
     }
 
+    private void CleanClonedStates()
+    {
+        for (int i = m_States.Count-1; i >= 0; i--)
+        {
+            StateInfo state = m_States[i];
+            if (state == null)
+                continue;
+
+            if (state.isReadyForCleanup)
+            {
+                Playable toDestroy = m_Mixer.GetInput(state.index);
+                graph.Disconnect(m_Mixer, state.index);
+                graph.DestroyPlayable(toDestroy);
+                m_States.RemoveState(i);
+            }
+        }
+    }
+
     private void DisconnectInput(int index)
     {
         if (keepStoppedPlayablesConnected)
@@ -593,6 +614,9 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
             for (int i = 0; i < m_States.Count; i++)
             {
                 StateInfo state = m_States[i];
+                if (state == null)
+                    continue;
+
                 float weight = hasAnyWeight ? state.weight / totalWeight : 0.0f;
                 m_Mixer.SetInputWeight(state.index, weight);
             }
@@ -673,8 +697,14 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
             {
                 Crossfade(queuedState.state.index, queuedState.fadeTime);
                 mustCalculateQueueTimes = true;
+                m_StateQueue.RemoveFirst();
+                it = m_StateQueue.First;
             }
-            it = it.Next;
+            else
+            {
+                it = it.Next;
+            }
+
         }
     }
 
@@ -701,6 +731,8 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
 
         //Once everything is calculated, update done status
         UpdateDoneStatus();
+
+        CleanClonedStates();
     }
 
     public bool ValidateInput(int index, Playable input)

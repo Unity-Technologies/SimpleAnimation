@@ -771,10 +771,34 @@ public class PlaybackTests
             yield return null;
             Assert.IsTrue(animation.IsPlaying("ToBlend"));
         }
+
     }
 
     public class PlayQueued
     {
+        [UnityTest]
+        public IEnumerator PlayQueued_Only_Plays_QueuedAnimations_Once([ValueSource(typeof(ComparativeTestFixture), "Sources")]System.Type type)
+        {
+            IAnimation animation = ComparativeTestFixture.Instantiate(type);
+            var clipX = Resources.Load<AnimationClip>("LinearX");
+            var clipInstanceX = Object.Instantiate<AnimationClip>(clipX);
+            clipInstanceX.legacy = animation.usesLegacy;
+            var clipInstanceXOnce = Object.Instantiate<AnimationClip>(clipX);
+            clipInstanceXOnce.legacy = animation.usesLegacy;
+            clipInstanceXOnce.wrapMode = WrapMode.Once;
+
+            animation.AddClip(clipInstanceX, "A");
+            animation.AddClip(clipInstanceX, "B");
+            animation.AddClip(clipInstanceX, "C");
+
+            animation.Play("A");
+            animation.PlayQueued("B", QueueMode.CompleteOthers);
+            animation.PlayQueued("C", QueueMode.CompleteOthers);
+            yield return new WaitForSeconds(2.8f);            
+            Assert.IsTrue(animation.IsPlaying("C"));
+            yield return new WaitForSeconds(0.3f);
+            Assert.IsFalse(animation.isPlaying);
+        }
         //TODO: Crossfade and Play clears queued animations
         //TODO: Stop clears queued animations
     }

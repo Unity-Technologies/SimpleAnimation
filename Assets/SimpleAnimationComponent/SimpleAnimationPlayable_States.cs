@@ -334,6 +334,10 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
             Disable();
             SetTime(0.0f);
             m_Playable.SetDone(false);
+            if (isClone)
+            {
+                m_ReadyForCleanup = true;
+            }
         }
 
         public void ForceWeight(float weight)
@@ -475,6 +479,13 @@ public partial class SimpleAnimationPlayable : PlayableBehaviour
         }
 
         private bool m_IsClone;
+
+        public bool isReadyForCleanup
+        {
+            get { return m_ReadyForCleanup; }
+        }
+
+        private bool m_ReadyForCleanup;
 
         public StateHandle parentState
         {
