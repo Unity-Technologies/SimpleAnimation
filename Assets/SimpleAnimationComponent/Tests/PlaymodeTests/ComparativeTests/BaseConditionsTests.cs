@@ -166,7 +166,8 @@ public class BaseConditionsTests
         animation = newGO.GetComponent<IAnimation>();
 
         Assert.AreEqual(true, animation.isPlaying);
-        Assert.AreEqual(true, animation.IsPlaying(animation.clip.name));
+        var defaultName = animation.usesLegacy ? animation.clip.name : "Default";
+        Assert.AreEqual(true, animation.IsPlaying(defaultName));
     }
 
     [Test]
@@ -207,9 +208,6 @@ public class BaseConditionsTests
         animation.clip = clipInstance;
         animation.playAutomatically = true;
         animation.AddClip(clipInstance, "OtherClip");
-
-        var newGO = Object.Instantiate<GameObject>(animation.gameObject);
-        animation = newGO.GetComponent<IAnimation>();
 
         Assert.AreEqual(false, animation.IsPlaying("OtherClip"));
     }

@@ -10,6 +10,7 @@ using UnityEngine.Playables;
 [RequireComponent(typeof(Animator))]
 public partial class SimpleAnimation: MonoBehaviour, IAnimationClipSource
 {
+    const string kDefaultStateName = "Default";
     private class StateEnumerable : IEnumerable<State>
     {
         private SimpleAnimation m_Owner;
@@ -253,9 +254,9 @@ public partial class SimpleAnimation: MonoBehaviour, IAnimationClipSource
 
     private void EnsureDefaultStateExists()
     {
-        if ( m_Playable != null && m_Clip != null && m_Playable.GetState(m_Clip.name) == null )
+        if ( m_Playable != null && m_Clip != null && m_Playable.GetState(kDefaultStateName) == null )
         {
-            m_Playable.AddClip(m_Clip, m_Clip.name);
+            m_Playable.AddClip(m_Clip, kDefaultStateName);
             Kick();
         }
     }
