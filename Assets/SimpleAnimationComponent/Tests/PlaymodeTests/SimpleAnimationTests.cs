@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 using NUnit.Framework;
+using System.Collections;
 
 public class SimpleAnimationTests
 {
@@ -58,6 +60,34 @@ public class SimpleAnimationTests
             var it = states.GetEnumerator();
             animation.RemoveState("SingleClip");
             Assert.Throws<InvalidOperationException>(() => { it.MoveNext(); });
+        }
+    }
+
+    public class PrefabBased
+    {
+        [UnityTest]
+        public IEnumerator PlayAutomatically_False_DoesNotMoveObject()
+        {
+            var prefab = Resources.Load<GameObject>("WithSimpleAnimation");
+            var simpleAnim = prefab.GetComponent<SimpleAnimation>();
+            simpleAnim.playAutomatically = false;
+            var instance = GameObject.Instantiate<GameObject>(prefab);
+            yield return new WaitForSeconds(0.1f);
+            Assert.Zero(instance.transform.position.magnitude);
+
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator PlayAutomatically_True_DoesMoveObject()
+        {
+            var prefab = Resources.Load<GameObject>("WithSimpleAnimation");
+            prefab.GetComponent<SimpleAnimation>().playAutomatically = true;
+            var instance = GameObject.Instantiate<GameObject>(prefab);
+            yield return new WaitForSeconds(0.1f);
+            Assert.Zero(instance.transform.position.magnitude);
+
+            yield return null;
         }
     }
 
